@@ -100,6 +100,7 @@
   (error "list-directory not implemented"))
 
 (defun walk-directory (dirname fn &key directories (test (constantly t)))
+  "Iterates through files in dirname applying a test (optional) and a function to each one of them"
   (labels
       ((walk (name) ; Recursive function that will be applied to dirname
 	 (cond
