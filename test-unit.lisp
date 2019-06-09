@@ -1,14 +1,13 @@
 (defvar *test-name* nil)
 
-(defmacro with-gensyms ((&rest names) &body body)
-  `(let ,(loop for n in names collect `(,n (gensym)))
-     ,@body))
-
 (defun report-result (result form)
   "Evaluates an expression which returns a boolean and prints if it failed or passed. Returns a boolean."
   (format t "~:[FAIL~;pass~] ...~a: ~a~%" result *test-name* form)
   result)
 
+(defmacro with-gensyms ((&rest names) &body body)
+  `(let ,(loop for n in names collect `(,n (gensym)))
+     ,@body))
 
 (defmacro combine-results (&body forms)
   "Evaluates the tests passed and returns a boolean which is T only if all the tests are T. It's similar to AND, but it doesn't stop when it finds a NIL."
