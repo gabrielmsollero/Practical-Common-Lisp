@@ -1,9 +1,10 @@
-(defun make-cd (title artist rating ripped)
-  "Instantiates CDs. Returns a p-list that represents the CD."
-  (list :title title :artist artist :rating rating :ripped ripped))
 
 ;; Creating the database as a global variable:
 (defvar *db* nil)
+
+(defun make-cd (title artist rating ripped)
+  "Instantiates CDs. Returns a p-list that represents the CD."
+  (list :title title :artist artist :rating rating :ripped ripped))
 
 (defun add-record (cd)
   "Adds CDs to the database. Returns the updated database."
