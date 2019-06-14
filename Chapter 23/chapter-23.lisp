@@ -1,12 +1,4 @@
-;; Comandos p/ usar no REPL antes de carregar
-;; (load "~/quicklisp/setup.lisp")
-;; (ql:quickload :cl-ppcre)
-;; (load "pathnames.lisp")
-
-(defpackage :com.gigamonkeys.spam
-  (:use :common-lisp :com.gigamonkeys.pathnames :cl-ppcre))
-
-(in-package :com.gigamonkeys.spam)
+(in-package :chapter-23-package)
 
 (defclass word-feature ()
   ((word
