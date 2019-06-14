@@ -26,7 +26,7 @@
     ,@body))
 
 ;; make-chapter-folder : number keyword -> boolean
-(defun make-chapter-folder (n &key if-exists)
+(defun make-chapter-folder (n &key export if-exists)
   "Creates system, package and code files for a chapter in the book."
   (let* ((n (write-to-string n))
 	 (chapter-path ; this is the predefined path I talked about, and can be changed in the parameter +path+.
@@ -34,7 +34,7 @@
 						:defaults +path+))))
     (sb-posix:chdir (ensure-directories-exist chapter-path))
     (and (make-chapter-system :path chapter-path :chapter-number n :if-exists if-exists)
-	 (make-chapter-package :path chapter-path :chapter-number n :if-exists if-exists)
+	 (make-chapter-package :path chapter-path :chapter-number n :export export :if-exists if-exists)
 	 (make-chapter-file :path chapter-path :chapter-number n :if-exists if-exists))))
 
 
