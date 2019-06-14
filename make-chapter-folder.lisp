@@ -26,7 +26,7 @@
     ,@body))
 
 ;; make-chapter-folder : number keyword -> boolean
-(defun make-chapter-folder (n &key export if-exists)
+(defun make-chapter-folder (n &key export use if-exists)
   "Creates system, package and code files for a chapter in the book."
   (let* ((n (write-to-string n))
 	 (chapter-path ; this is the predefined path I talked about, and can be changed in the parameter +path+.
@@ -34,7 +34,7 @@
 						:defaults +path+))))
     (sb-posix:chdir (ensure-directories-exist chapter-path))
     (and (make-chapter-system :path chapter-path :chapter-number n :if-exists if-exists)
-	 (make-chapter-package :path chapter-path :chapter-number n :export export :if-exists if-exists)
+	 (make-chapter-package :path chapter-path :chapter-number n :use use :export export :if-exists if-exists)
 	 (make-chapter-file :path chapter-path :chapter-number n :if-exists if-exists))))
 
 
@@ -57,7 +57,7 @@
 t))
 
 ;; make-chapter-package : string number list keyword -> boolean
-(defun make-chapter-package (&key path chapter-number export (if-exists :error))
+(defun make-chapter-package (&key path chapter-number use export (if-exists :error))
   "Creates package file for a chapter, possibly exporting some symbols."
   (with-open-chapter-file (out "package" :directory path :chapter-number chapter-number :if-exists if-exists)
     (format
@@ -65,8 +65,8 @@ t))
      "(in-package :cl-user)
 
 (defpackage :chapter-~a-package
-  (:use :common-lisp)~:[~;~%~:*  (:export~{~%   :~a~})~])" chapter-number (mapcar #'string-downcase export))
-  t))
+  (:use :common-lisp ~:[~;~%        ~:*~{:~a~}~])~:[~;~%~:*  (:export~{~%   :~a~})~])" chapter-number (mapcar #'string-downcase use) (mapcar #'string-downcase export))
+  t)) 
 
 ;; make-chapter-file : string number keyword -> boolean
 (defun make-chapter-file (&key path chapter-number (if-exists :error))
