@@ -15,18 +15,23 @@
 				  &body body) ; I tried to make the structure look like with-open-file, but there
 					      ; is a string and a list of keywords where the path should be.
   "A version of with-open-file with convenient tools for creating chapter files, which are repetitive. Returns true when all the files are created."
-  `(with-open-file (,streamvar (make-pathname ; creating the file in which the text will be written.
-				:name ,(if chapter-number
-					  `(format nil "chapter-~a~:[~;-~:*~a~]" ,chapter-number ,component)
-					  component)
-			       :type ,type
-			       :defaults ,directory)
-			       :direction :output
-			       :if-exists ,if-exists)
-    ,@body))
+  `(let ((component ,component)
+	 (type      ,type)
+	 (directory ,directory)
+	 (chapter-number ,chapter-number)
+	 (if-exists ,if-exists))
+     (with-open-file (,streamvar (make-pathname ; creating the file in which the text will be written.
+				  :name (if chapter-number
+					    (format nil "chapter-~a~:[~;-~:*~a~]" chapter-number component)
+					    component)
+				  :type type
+				  :defaults directory)
+				 :direction :output
+				 :if-exists if-exists)
+       ,@body)))
 
 ;; make-chapter-folder : number keyword -> boolean
-(defun make-chapter-folder (n &key export use if-exists)
+(defun make-chapter-folder (n &key if-exists export use)
   "Creates system, package and code files for a chapter in the book."
   (let* ((n (write-to-string n))
 	 (chapter-path ; this is the predefined path I talked about, and can be changed in the parameter +path+.
@@ -34,7 +39,7 @@
 						:defaults +path+))))
     (sb-posix:chdir (ensure-directories-exist chapter-path))
     (and (make-chapter-system :path chapter-path :chapter-number n :if-exists if-exists)
-	 (make-chapter-package :path chapter-path :chapter-number n :use use :export export :if-exists if-exists)
+	 (make-chapter-package :path chapter-path :chapter-number n :export export :if-exists if-exists :use use)
 	 (make-chapter-file :path chapter-path :chapter-number n :if-exists if-exists))))
 
 
@@ -50,14 +55,14 @@
 (in-package :chapter-~a~:*-asd)
 
 (defsystem chapter-~a~:*-system
-    :name 'chapter-~a~:*-system
+    :name \"chapter-~a~:*-system\"
     :components
-    ((:file 'chapter-~a~:*-package)
-     (:file 'chapter-~a~:* :depends-on ('chapter-~a-package))))" chapter-number)
+    ((:file \"chapter-~a~:*-package\")
+     (:file \"chapter-~a~:*\" :depends-on (\"chapter-~a-package\"))))" chapter-number)
 t))
 
 ;; make-chapter-package : string number list keyword -> boolean
-(defun make-chapter-package (&key path chapter-number use export (if-exists :error))
+(defun make-chapter-package (&key path chapter-number export use (if-exists :error))
   "Creates package file for a chapter, possibly exporting some symbols."
   (with-open-chapter-file (out "package" :directory path :chapter-number chapter-number :if-exists if-exists)
     (format
