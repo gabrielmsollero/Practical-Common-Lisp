@@ -74,14 +74,14 @@
     (1
      (with-gensyms (type stream value)
        (destructuring-bind (derived-from &rest derived-args) (mklist (first spec))
-	 `(progn
+	 `(eval-when (:compile-toplevel :load-toplevel :execute)
 	    (defmethod read-value ((,type (eql ',name)) ,stream &key ,@args)
 	      (read-value ',derived-from ,stream ,@derived-args))
 	    (defmethod write-value ((,type (eql ',name)) ,stream ,value &key ,@args)
 	      (write-value ',derived-from ,stream ,value ,@derived-args))))))
     (2
      (with-gensyms (type)
-       `(progn
+       `(eval-when (:compile-toplevel :load-toplevel :execute)
 	  ,(destructuring-bind ((in) &body body) (rest (assoc :reader spec))
 	     `(defmethod read-value ((,type (eql ',name)) ,in &key ,@args)
 		,@body))
