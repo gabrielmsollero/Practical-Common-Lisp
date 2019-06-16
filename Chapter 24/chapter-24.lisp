@@ -69,7 +69,7 @@
 					,objectvar))))))
 
 (defmacro define-binary-type (name (&rest args) &body spec)
-  "Generates read-value and write-value methods for existing classes rather then defined with define-binary-class."
+  "Generates read-value and write-value methods for existing classes rather than defined with define-binary-class."
   (ecase (length spec)
     (1
      (with-gensyms (type stream value)
